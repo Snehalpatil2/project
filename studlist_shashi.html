@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Editable Student List</title>
     <style>
+      h2{
+        text-align: center;
+      }
       table {
-        width: 30%;
-        margin: auto;
+        width: 40%;
         border-collapse: collapse;
       }
       #studinfo {
@@ -16,24 +18,29 @@
         grid-template-rows: 1fr;
         grid-column-gap: 0px;
         grid-row-gap: 0px;
-
       }
 
       #studinfo-input {
         grid-area: 1 / 1 / 2 / 2;
-        padding: 0 1% 2%;
+        margin: 0 auto 2% 5%;
       }
 
       #output-section {
         grid-area: 1 / 2 / 2 / 3;
-        padding: 0 5% 2%;
+        margin: 0  2% 2% auto; 
       }
 
       th,
       td {
-        padding: 10px;
+        margin: 2%;
         border: 1px solid black;
-        text-align: left;
+      }
+
+      #data-output{
+
+      }
+      #data-output td {
+        padding: auto;
       }
 
       .hidden {
@@ -45,9 +52,9 @@
   <body>
     <div id="root">
       <h2>Student List</h2>
-      <h3>Input Table</h3>
       <div id="studinfo">
         <div id="studinfo-input">
+          <h3>Input Table</h3>
           <table border="1">
             <thead>
               <tr>
