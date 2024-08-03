@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editable Student List</title>
+  <style>
+    h2 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #studinfo,
+    #subject,
+    #stud_sub {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 1fr;
+      grid-column-gap: 0px;
+      grid-row-gap: 0px;
+    }
+
+    #studinfo-input,
+    #subject-input,
+    #studsub-input {
+      grid-area: 1 / 1 / 2 / 2;
+      margin: 0 2% 2% 5%;
+    }
+
+    #output-section,
+    #subject-output-section,
+    #studsub-output-section {
+      grid-area: 1 / 2 / 2 / 3;
+      margin: 0 5% 2% 2%;
+    }
+
+    th,
+    td {
+      padding: 1% 2% 1%;
+      border: 1px solid black;
+    }
+
+    #stdin,
+    #subin,
+    #studsubin {
+      width: 100%;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .rollno-container,
+    .subno-container {
+      position: relative;
+      /* width: 300px; */
+    }
+
+    #subno-search,
+    #rollno-search {
+      /* width: 90%; */
+      /* padding: 10px; */
+      /* box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px; */
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      width: 75%;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 150px;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+      /* Hide dropdown initially */
+    }
+
+    .dropdown li {
+      padding: 5px;
+      cursor: pointer;
+      border-bottom: 1px solid #eee;
+    }
+
+    .dropdown li:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root">
+    <h2>Student List</h2>
+    <div id="studinfo">
+      <div id="studinfo-input">
+        <div id="sdtin">
+          <h3>Input Table</h3>
+          <table border="1">
+            <thead>
+              <tr>
+                <th>Sr. No.</th>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Grade</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="data-output">
+              <!-- Dynamic rows will be added here -->
+            </tbody>
+          </table>
+          <div style="margin-top: 10px">
+            <button name="studinfo" onclick="add(event)">Add Student</button>
+            <button name="studinfo" onclick="saveJson(event)" style="margin-left: 10px">
+              Save JSON
+            </button>
+            <input name="studinfo" type="file" onchange="loadJson(event)" style="margin-left: 10px" />
+            <button name="studinfo" onclick="generateOutput(event)" style="margin-left: 10px">
+              Generate Output
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="output-section" class="hidden">
+        <h3>Output Table</h3>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Sr. No.</th>
+              <th>Roll No</th>
+              <th>Name</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody id="output-table">
+            <!-- Dynamic output rows will be added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- /////////////////////////////////Subject Section////////////////////////// -->
+    <h2>Subject List</h2>
+    <div id="subject">
+      <div id="subject-input">
+        <div id="subin">
+          <h3>Input Table</h3>
+          <table border="1">
+            <thead>
+              <tr>
+                <th>Sr. No.</th>
+                <th>Subject No</th>
+                <th>Subject Name</th>
+                <th>Guide</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="subject-output">
+              <!-- Dynamic rows will be added here -->
+            </tbody>
+          </table>
+          <div style="margin-top: 10px">
+            <button name="subject" onclick="add(event)">Add Subject</button>
+            <button name="subject" onclick="saveJson(event)" style="margin-left: 10px">
+              Save JSON
+            </button>
+            <input name="subject" type="file" onchange="loadJson(event)" style="margin-left: 10px" />
+            <button name="subject" onclick="generateOutput(event)" style="margin-left: 10px">
+              Generate Output
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="subject-output-section" class="hidden">
+        <h3>Output Table</h3>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Sr. No.</th>
+              <th>Subject No</th>
+              <th>Subject Name</th>
+              <th>Guide</th>
+            </tr>
+          </thead>
+          <tbody id="subject-output-table">
+            <!-- Dynamic output rows will be added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Student subject -->
+    <h2>Student Subject List</h2>
+    <div id="stud_sub">
+      <div id="studsub-input">
+        <div id="studsubin">
+          <h3>Input Table</h3>
+          <table border="1">
+            <thead>
+              <tr>
+                <th>Sr. No.</th>
+                <th>Roll No</th>
+                <th>Subject No</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="studsub-output">
+              <!-- Dynamic rows will be added here -->
+            </tbody>
+          </table>
+          <div style="margin-top: 10px">
+            <button name="stud_sub" onclick="add(event)">Add Student</button>
+            <button name="stud_sub" onclick="saveJson(event)" style="margin-left: 10px">
+              Save JSON
+            </button>
+            <!-- <input name="stud_sub" type="file" onchange="loadJson(event)" style="margin-left: 10px" /> -->
+            <button name="stud_sub" onclick="generateOutput(event)" style="margin-left: 10px">
+              Generate Output
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="studsub-output-section" class="hidden">
+        <h3>Output Table</h3>
+        <table border="1">
+          <thead>
+            <tr>
+              <th>Sr. No.</th>
+              <th>Roll No</th>
+              <th>Subject No</th>
+            </tr>
+          </thead>
+          <tbody id="studsub-output-table">
+            <!-- Dynamic output rows will be added here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="./sql.js"></script>
+  <script>
+    var db;
+    initSqlJs().then((SQL) => {
+      db = new SQL.Database();
+      db.exec("PRAGMA foreign_keys = on;");
+      db.exec(
+        "CREATE TABLE studinfo (id int, rollno text primary key, stud_name text, grade text);"
+      );
+      db.exec(
+        "CREATE TABLE subject(id int, subno text primary key, subname text, guidename text);"
+      );
+      db.exec(
+        "CREATE TABLE stud_sub(id int,rollno text, subno text, FOREIGN KEY (rollno) references studinfo (rollno), FOREIGN KEY (subno) references subject (subno), PRIMARY KEY(rollno, subno));"
+      );
+      db.exec(`insert into studinfo values(0, '', '', '');`);
+      db.exec(
+        `INSERT INTO subject VALUES(0, "", "", "");`
+      );
+      // Initial render
+      renderTable("studinfo");
+      renderTable("subject");
+      renderTable("stud_sub");
+    });
+
+    function renderStudSub(tableName) {
+      const tableBody = document.getElementById("studsub-output");
+      tableBody.innerHTML = "";
+      const res = db.exec("SELECT * FROM stud_sub;");
+      if (res[0]) {
+        res[0].values.forEach((data, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${index + 1}</td>
+          <td>
+            <div class="rollno-container">
+              <input id = "rollno-search" placeholder="Search Roll No..." type = "text" name = "${res[0].columns[1]
+            }" value="${data[1]}" oninput = "handleChange(${data[0]},event)">
+              <ul id="rollno-dropdown" class="dropdown">
+                <!-- List items will be dynamically inserted here -->
+              </ul>
+            </div>
+          </td>
+          <td>
+            <div class="subno-container">
+              <input id = "subno-search" placeholder="Search Subject No..." type = "text" name = "${res[0].columns[2]
+            }" value="${data[2]}" oninput= "handleChange(${data[0]}, event)">
+              <ul id="subno-dropdown" class="dropdown">
+                <!-- List items will be dynamically inserted here -->
+              </ul>
+            </div>
+          </td>
+          <td><button onclick="remove(${data[0]
+            }, ${tableName})" style="margin-right: 10px">Remove</button>
+          </td>
+          `;
+          tableBody.appendChild(row);
+        });
+      }
+    }
+
+    function handleChange(id, event) {
+      const { name, value } = event.target;
+      var dropdown, res;
+      if (name == "rollno") {
+        dropdown = document.getElementById("rollno-dropdown");
+        res = db.exec(`Select ${name} from studinfo where rollno like "%${value}%";`);
+      } else {
+        dropdown = document.getElementById("subno-dropdown");
+        res = db.exec(`Select ${name} from subject where subno like "%${value}%";`);
+      }
+      dropdown.style.display = "block"
+      dropdown.innerHTML = "";
+      if (res[0]) {
+        res[0].values.forEach((data, index) => {
+          const li = document.createElement("li");
+          li.innerHTML = data;
+          li.id = data;
+          li.addEventListener('click', (e) => {
+            db.exec(`UPDATE stud_sub set ${name} = "${e.target.id}" where id = ${id};`);
+            renderTable("stud_sub");
+            dropdown.style.display = 'none';
+          });
+          dropdown.appendChild(li);
+        });
+      }
+    }
+
+    function renderTable(tableName) {
+      var tableBody;
+      const res = db.exec(`SELECT * FROM ${tableName};`);
+      if (tableName == "studinfo") {
+        tableBody = document.getElementById("data-output");
+      } else if (tableName == "subject") {
+        tableBody = document.getElementById("subject-output");
+      } else {
+        renderStudSub(tableName);
+        return;
+      }
+      tableBody.innerHTML = "";
+      if (res[0]) {
+        res[0].values.forEach((data, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${index + 1}</td>
+          <td><input type="text" name="${res[0].columns[1]}" value="${data[1]
+            }" oninput="handleInputChange(${data[0]
+            }, event, ${tableName})" /></td>
+          <td><input type="text" name="${res[0].columns[2]}" value="${data[2]
+            }" oninput="handleInputChange(${data[0]
+            }, event, ${tableName})" /></td>
+          <td><input type="text" name="${res[0].columns[3]}" value="${data[3]
+            }" oninput="handleInputChange(${data[0]
+            }, event, ${tableName})" /></td>
+          <td><button onclick="remove(${data[0]
+            }, ${tableName})" style="margin-right: 10px">Remove</button>
+        `;
+          tableBody.appendChild(row);
+        });
+      }
+    }
+
+    function handleInputChange(index, event, tableName) {
+      const { name, value } = event.target;
+      const query = `UPDATE ${tableName.id} SET ${name} = '${value}' WHERE id = ${index};`;
+      db.exec(query);
+    }
+
+    function add(event) {
+      const res = db.exec(`SELECT * from ${event.target.name};`);
+      if (event.target.name == "studinfo" || event.target.name == "subject") {
+        db.exec(
+          `INSERT INTO ${event.target.name} VALUES(${res[0] ? res[0].values.length : 0
+          }, "", "", "");`
+        );
+      } else {
+        db.exec(
+          `INSERT INTO ${event.target.name} VALUES(${res[0] ? res[0].values.length  : 0
+          }, "", "");`
+        );
+      }
+      renderTable(event.target.name);
+    }
+
+    function remove(index, tableName) {
+      db.exec(`DELETE FROM ${tableName.id} where id = ${index}`);
+      const res = db.exec("SELECT * FROM stud_sub;");
+      renderTable(tableName.id);
+    }
+
+    function saveJson(event) {
+      const res = db.exec(`SELECT * FROM ${event.target.name};`);
+      const jsonData = JSON.stringify(res);
+      const blob = new Blob([jsonData], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${event.target.name}_data.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function loadJson(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      db.exec(`DELETE from ${event.target.name};`);
+      reader.onload = (e) => {
+        res = JSON.parse(e.target.result);
+        res[0].values.forEach((data) => {
+          db.exec(
+            `INSERT into ${event.target.name} values(${data[0]}, '${data[1]}', '${data[2]}', '${data[3]}');`
+          );
+        });
+        renderTable(event.target.name);
+      };
+      reader.readAsText(file);
+    }
+
+    function generateOutput(event) {
+      const tableName = event.target.name;
+      var outputSection, outputTable;
+      const res = db.exec(`SELECT * FROM ${tableName};`);
+      if (tableName == "studinfo") {
+        outputSection = document.getElementById("output-section");
+        outputTable = document.getElementById("output-table");
+      } else if (tableName == "subject") {
+        outputSection = document.getElementById("subject-output-section");
+        outputTable = document.getElementById("subject-output-table");
+      } else {
+        outputSection = document.getElementById("studsub-output-section");
+        outputTable = document.getElementById("studsub-output-table");
+      }
+      outputTable.innerHTML = "";
+      if (res[0]) {
+        res[0].values.forEach((data, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+          <td>${index + 1}</td>
+          <td><input type="text" name="rollno" value="${data[1]
+            }" readonly /></td>
+          <td><input type="text" name="stud_name" value="${data[2]
+            }" readonly /></td>
+          ${(tableName != "stud_sub")?(`<td><input type="text" name="grade" value="${data[3]
+          }" readonly /></td>`):""}
+        `;
+          outputTable.appendChild(row);
+        });
+      }
+      outputSection.classList.remove("hidden");
+    }
+  </script>
+</body>
+
+</html>
